@@ -50,6 +50,10 @@ jobs:
         with:
           node-version: 10
 
+# remove after cache module will be fixed
+      - name: Install with npm
+        run: npm ci
+
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -69,8 +73,8 @@ jobs:
             ~/.npm
             ./node_modules
             ./build
-          key: ${{ runner.os }}-build-${{ github.run_id }}
-          restore-keys: ${{ runner.os }}-build-${{ github.run_id }}
+          key: ${{ runner.os }}-buld-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-buld-${{ github.run_id }}
 
   Test:
     needs: Install
@@ -86,6 +90,10 @@ jobs:
         uses: actions/setup-node@v2.4.1
         with:
           node-version: 10
+
+# remove after cache module will be fixed
+      - name: Install with npm
+        run: npm ci
 
       - name: Cache node modules
         uses: actions/cache@v2
