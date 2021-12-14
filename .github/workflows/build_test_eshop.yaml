@@ -108,4 +108,5 @@ jobs:
           playbook: ec2_deploy.yml
           directory: ../ansible/
           #key: ${{secrets.SSH_PRIVATE_KEY}}
+          #test deploy
           vault_password: ${{secrets.VAULT_PASSWORD}}
