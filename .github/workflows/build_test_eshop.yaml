@@ -106,7 +106,7 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: ec2_deploy.yml
-          directory: ../ansible/
+          directory: ./ansible/
           #key: ${{secrets.SSH_PRIVATE_KEY}}
           #test deploy
           vault_password: ${{secrets.VAULT_PASSWORD}}
