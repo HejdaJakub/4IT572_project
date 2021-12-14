@@ -102,11 +102,25 @@ jobs:
     if: ${{ github.ref == 'refs/heads/master' }}
 
     steps:
-      - name: Run playbook
-        uses: dawidd6/action-ansible-playbook@v2
+      - name: Git Checkout
+        uses: actions/checkout@v2.4.0
         with:
-          playbook: ec2_deploy.yml
-          directory: ./ansible/
-          #key: ${{secrets.SSH_PRIVATE_KEY}}
-          #test deploy
-          vault_password: ${{secrets.VAULT_PASSWORD}}
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: pip3 install ansible==4 boto boto3
+
+      - name: Deploy to AWS
+        env:
+          ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          SESSION_TOKEN: ${{ secrets.SESSION_TOKEN }}
+          ANSIBLE_HOST_KEY_CHECKING: False
+        run: |
+          echo "${{ secrets.PEM_FILE }}" > ./devops.pem
+          chmod 400 ./devops.pem
+          ansible-playbook ./ansible/ec2_deploy.yml --user ec2-user --key-file ./devops.pem
