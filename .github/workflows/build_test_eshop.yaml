@@ -50,10 +50,6 @@ jobs:
         with:
           node-version: 10
 
-# remove after cache module will be fixed
-      - name: Install with npm
-        run: npm ci
-
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -91,10 +87,6 @@ jobs:
         with:
           node-version: 10
 
-# remove after cache module will be fixed
-      - name: Install with npm
-        run: npm ci
-
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -114,6 +106,6 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: ec2_deploy.yml
-          directory: ./
-          key: ${{secrets.SSH_PRIVATE_KEY}}
-          # vault_password: ${{secrets.VAULT_PASSWORD}}
+          directory: ../ansible/
+          #key: ${{secrets.SSH_PRIVATE_KEY}}
+          vault_password: ${{secrets.VAULT_PASSWORD}}
