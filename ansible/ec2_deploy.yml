@@ -3,23 +3,28 @@
   connection: local
 
   tasks:
+    - name: Identify old instances for termination
+      ec2_instance_info:
+        region: us-east-1
+        aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+        aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+        security_token: "{{ lookup('env', 'AWS_SESSION_TOKEN') }}"
+      register: ec2_stat
+
     - name: Launch EC2 instance
       amazon.aws.ec2:
         instance_type: t2.small
         image: ami-0ed9277fb7eb570c9
         region: us-east-1
         key_name: devops
-        vpc_subnet_id: subnet-0d2d6f3e0e1289686
+        vpc_subnet_id: subnet-028966453d0d7a977
         assign_public_ip: yes
         count: 1
         group: eshop
         wait: true
-        # aws_access_key: "{{secrets.ACCESS_KEY}}"
-        # aws_secret_key: "{{secrets.SECRET_KEY}}"
-        # security_token: "{{secrets.SESSION_TOKEN}}"
-        aws_access_key: "{{ACCESS_KEY}}"
-        aws_secret_key: "{{SECRET_KEY}}"
-        security_token: "{{SESSION_TOKEN}}"
+        aws_access_key: "{{ lookup('env', 'ACCESS_KEY') }}"
+        aws_secret_key: "{{ lookup('env', 'SECRET_KEY') }}"
+        security_token: "{{ lookup('env', 'SESSION_TOKEN') }}"
       register: ec2
 
     - name: Add new instance to host group
@@ -76,3 +81,20 @@
       become: yes
     - wait_for:
         port: 80
+
+- name: Terminate instances
+  hosts: localhost
+  connection: local
+
+  tasks:
+   - name: Terminate old instances
+     amazon.aws.ec2:
+       region: us-east-1
+       state: absent
+       aws_access_key: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+       aws_secret_key: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+       security_token: "{{ lookup('env', 'AWS_SESSION_TOKEN') }}"
+       instance_ids: '{{ item.instance_id }}'
+     loop: "{{ ec2_stat.instances }}"
+     loop_control:
+       label: "{{ item.instance_id }}"
